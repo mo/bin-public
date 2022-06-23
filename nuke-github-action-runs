@@ -1,0 +1,55 @@
+#!/bin/bash
+
+if [ "$(which dialog)" == "" ]; then
+	echo "dialog package must be installed: sudo apt-get install dialog"
+	exit 1
+fi
+
+if [ "$1" != "" ]; then
+	REPO="$1"
+else
+	REPO="remaker"
+fi
+USERNAME_AND_REPO="minimumfox/$REPO"
+THINGS=$(gh api repos/$USERNAME_AND_REPO/actions/runs --paginate | jq -r '.workflow_runs[] | (.id | tostring) + "_" + .created_at')
+NAME_OF_THE_THINGS="runs"
+ACTION_VERB="delete"
+ACTION_CMD="gh api -X DELETE repos/$USERNAME_AND_REPO/actions/runs/"
+
+COUNT=$(echo $THINGS | tr ' ' '\n' | wc -l)
+if [ "$COUNT" == "0" ]; then
+	echo "No $NAME_OF_THE_THINGS found."
+	exit 0
+fi
+
+DIALOG_MENU_ITEMS=""
+for LINE in $THINGS; do
+	ITEM_ID=$(echo $LINE | cut -f 1 -d '_')
+	ITEM_DESC=$(echo $LINE | cut -f 2- -d '_')
+	DIALOG_MENU_ITEMS="$DIALOG_MENU_ITEMS $ITEM_ID \"${ITEM_DESC}\" off"
+done
+
+# if there are more menu items than this, user will need to scroll up and down in list
+MAX_MENU_ITEMS_ON_SCREEN_AT_ONCE=60
+
+let DIALOG_MENU_WIDTH=$(echo $THINGS | wc -L)+12
+if [ $COUNT -gt $MAX_MENU_ITEMS_ON_SCREEN_AT_ONCE ]; then
+	let "DIALOG_MENU_HEIGHT=$MAX_MENU_ITEMS_ON_SCREEN_AT_ONCE+7"
+else
+	let "DIALOG_MENU_HEIGHT=$COUNT+7"
+fi
+
+DIALOG_CMD="dialog --checklist 'Check $NAME_OF_THE_THINGS to $ACTION_VERB:'  $DIALOG_MENU_HEIGHT  $DIALOG_MENU_WIDTH  $COUNT  $DIALOG_MENU_ITEMS"
+
+TEMPFILE="/tmp/selected_things_$(date +%Y%m%d_%H%M%S)"
+sh -c "$DIALOG_CMD" 2> $TEMPFILE
+clear
+echo "Will $ACTION_VERB these $NAME_OF_THE_THINGS:"
+for ITEM_ID in $(cat $TEMPFILE); do
+	ITEM_LINE=$(echo $THINGS | tr ' ' '\n' | grep $ITEM_ID)
+	ITEM_DESC=$(echo $ITEM_LINE | cut -f 2- -d '_')
+	echo "$ITEM_DESC"
+	$ACTION_CMD$ITEM_ID
+done
+rm $TEMPFILE
+echo

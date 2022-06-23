@@ -1,0 +1,2 @@
+#!/bin/bash
+ecmascript-eslint-autofix --rule 'semi: ["error", "never"]' "$@"

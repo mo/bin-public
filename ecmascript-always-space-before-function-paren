@@ -1,0 +1,2 @@
+#!/bin/bash
+ecmascript-eslint-autofix --rule '"space-before-function-paren": ["error", { anonymous: "always", named: "never", asyncArrow: "always" }]' "$@"

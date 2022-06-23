@@ -1,0 +1,4 @@
+#!/bin/bash
+# WARNING: This autofix will not adjust indentation for comments,
+# so the "fixed" file needs manual fixups before it can be committed.
+ecmascript-eslint-autofix --rule 'indent: ["error", 2]' "$@"

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# This script requires eslint and @babel/eslint-parser to be installed globally.
+
+eslint --parser @babel/eslint-parser --parser-options=ecmaVersion:6 --parser-options=sourceType:module --no-eslintrc --no-ignore --fix "$@"

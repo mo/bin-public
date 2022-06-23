@@ -1,0 +1,24 @@
+#!/bin/bash
+
+SECONDS=$1
+if [ "$SECONDS" == "" ]; then
+	echo "usage: $(basename $0) SECONDS"
+	exit 1
+fi
+
+DAYS=$(($SECONDS/(24*60*60)))
+SECONDS=$(($SECONDS-$DAYS*(24*60*60)))
+HOURS=$(($SECONDS/(60*60)))
+SECONDS=$(($SECONDS-$HOURS*(60*60)))
+MINUTES=$(($SECONDS/60))
+SECONDS=$(($SECONDS-$MINUTES*60))
+
+if [ "$DAYS" != "0" ]; then
+    echo "${DAYS}d ${HOURS}h ${MINUTES}m ${SECONDS}s"
+elif [ "$HOURS" != "0" ]; then
+    echo "${HOURS}h ${MINUTES}m ${SECONDS}s"
+elif [ "$MINUTES" != "0" ]; then
+    echo "${MINUTES}m ${SECONDS}s"
+else
+    echo "${SECONDS}s"
+fi

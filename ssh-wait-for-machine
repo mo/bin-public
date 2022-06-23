@@ -1,0 +1,12 @@
+#!/bin/bash
+TARGET_MACHINE=$1
+TARGET_USER=$2
+if [ "$TARGET_USER" = "" ]; then
+	TARGET_USER=$USER
+fi
+while [ "$(ssh -q -o StrictHostKeyChecking=no -o ConnectTimeout=1 -o ConnectionAttempts=1 $TARGET_USER@$TARGET_MACHINE 'echo online')" != "online" ]; do
+        sleep 1
+done
+if [ "$NOTIFY" == "1" ]; then
+	notify-send 'ssh-wait-for-machine finished waiting...'
+fi

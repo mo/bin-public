@@ -1,0 +1,50 @@
+#!/bin/bash
+
+if [ "$(which dialog)" == "" ]; then
+	echo "dialog package must be installed: sudo apt-get install dialog"
+	exit 1
+fi
+
+THINGS=$(docker image ls --format "{{.ID}}_{{.Size}}_{{.Repository}}:{{.Tag}}")
+
+COUNT=$(echo $THINGS | tr ' ' '\n' | wc -l)
+if [ "$COUNT" == "0" ]; then
+	echo "This system has no Docker containers."
+	exit 0
+fi
+
+DIALOG_MENU_ITEMS=""
+for LINE in $THINGS; do
+	ITEM_ID=$(echo $LINE | cut -f 1 -d '_')
+	ITEM_DESC=$(echo $LINE | cut -f 2- -d '_' | tr '_' ' ')
+	DIALOG_MENU_ITEMS="$DIALOG_MENU_ITEMS $ITEM_ID \"${ITEM_DESC}\" off"
+done
+
+# if there are more menu items than this, user will need to scroll up and down in list
+MAX_MENU_ITEMS_ON_SCREEN_AT_ONCE=60
+
+let DIALOG_MENU_WIDTH=$(echo $THINGS | wc -L)+12
+if [ $COUNT -gt $MAX_MENU_ITEMS_ON_SCREEN_AT_ONCE ]; then
+	let "DIALOG_MENU_HEIGHT=$MAX_MENU_ITEMS_ON_SCREEN_AT_ONCE+7"
+else
+	let "DIALOG_MENU_HEIGHT=$COUNT+7"
+fi
+
+DIALOG_CMD="dialog --checklist 'Check containers to delete:'  $DIALOG_MENU_HEIGHT  $DIALOG_MENU_WIDTH  $COUNT  $DIALOG_MENU_ITEMS"
+
+TEMPFILE="/tmp/selected_things_$(date +%Y%m%d_%H%M%S)"
+sh -c "$DIALOG_CMD" 2> $TEMPFILE
+clear
+echo "Nuking images:"
+for ITEM_ID in $(cat $TEMPFILE); do
+	ITEM_LINE=$(echo $THINGS | tr ' ' '\n' | grep $ITEM_ID)
+	ITEM_DESC=$(echo $ITEM_LINE | cut -f 2- -d '_' | tr '_' ' ')
+	echo -n "$ITEM_DESC     id: "
+	docker image rm -f $ITEM_ID
+done
+rm $TEMPFILE
+echo
+echo "Remaining images:"
+echo
+docker image ls --format "{{.ID}}_{{.Size}}_{{.Repository}}:{{.Tag}}"
+echo

@@ -1,0 +1,7 @@
+#!/bin/bash
+MINUTES="$1"
+if [ "$MINUTES" == "" ]; then
+	echo "usage: $(basename $0) MINUTES"
+	exit 1
+fi
+sleep $(($MINUTES * 60))

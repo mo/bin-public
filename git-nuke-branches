@@ -1,0 +1,39 @@
+#!/bin/bash
+
+if [ "$(which dialog)" == "" ]; then
+	echo "dialog package must be installed: sudo apt-get install dialog"
+	exit 1
+fi
+
+BRANCHES="$(git branch | grep -v \\*)"
+BRANCH_COUNT="$(git branch | grep -v \\* | wc -l)"
+
+DIALOG_MENU_ITEMS=""
+for BRANCH in $BRANCHES; do
+	BRANCH_DETAILS="$(git branch -v --list $BRANCH | tr -s ' ' | cut -f 3- -d ' ')"
+	BRANCH_DETAILS="$(echo $BRANCH_DETAILS | sed 's/"/\\"/g')"
+	DIALOG_MENU_ITEMS="$DIALOG_MENU_ITEMS $BRANCH \"$BRANCH_DETAILS\" off"
+done
+
+# if there are more branches than this, user will need to scroll up and down in list
+MAX_MENU_ITEMS_ON_SCREEN_AT_ONCE=60
+
+let DIALOG_MENU_WIDTH="$(git branch -v | wc -L)+8"
+if [ $BRANCH_COUNT -gt $MAX_MENU_ITEMS_ON_SCREEN_AT_ONCE ]; then
+	let "DIALOG_MENU_HEIGHT=$MAX_MENU_ITEMS_ON_SCREEN_AT_ONCE+7"
+else
+	let "DIALOG_MENU_HEIGHT=$BRANCH_COUNT+7"
+fi
+
+DIALOG_CMD="dialog --checklist 'Check branches to delete:'  $DIALOG_MENU_HEIGHT  $DIALOG_MENU_WIDTH  $BRANCH_COUNT  $DIALOG_MENU_ITEMS"
+
+TEMPFILE="/tmp/branches_to_nuke_$(date +%Y%m%d_%H%M%S)"
+sh -c "$DIALOG_CMD" 2> $TEMPFILE
+clear
+echo "git branch -D $(cat $TEMPFILE)" | sh
+rm $TEMPFILE
+echo
+echo "Remaining branches:"
+echo
+git branch -v
+echo

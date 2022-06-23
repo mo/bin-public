@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# -qq suppress all output, even errors
+# -q suppress output, except errors
+
+if [ "$1" == "-qq" ]; then
+    QUIET="2"
+    shift
+elif [ "$1" == "-q" ]; then
+    QUIET="1"
+    shift
+else
+    QUIET="0"
+fi
+
+ROOT_NAME="$1"
+IS_ROOT_SCRIPT="cwd-is-$ROOT_NAME"
+
+INITIAL_DIR="$(pwd)"
+while [ 1 ]; do
+        if $IS_ROOT_SCRIPT ; then
+            if [ "$QUIET" == "0" ]; then
+                echo $(pwd)
+            fi
+            exit 0
+        fi
+        cd ..
+        if [ "$(pwd)" == "/" ]; then
+                if [ "$QUIET" != "2" ]; then
+                    echo "ERROR: $INITIAL_DIR is not inside a $ROOT_NAME"
+                fi
+                exit 1
+        fi
+done

@@ -1,0 +1,18 @@
+#!/bin/bash
+
+ORIGINAL_DIR=$(pwd)
+cd $(find-cd-root $(pwd) ./gradlew)
+
+if [ ! -f ./gradlew ]; then
+    echo "ERROR: $(pwd)/gradlew does not exist"
+    exit 1
+fi
+
+export JAVA_HOME=""
+ALL_ARGS="$@"
+if [ "$ALL_ARGS" != "" ]; then
+	GW_ARGS="$ALL_ARGS"
+else
+	GW_ARGS="build testClasses -x test"
+fi
+RF_LOCAL_DEVELOPER_BUILD=1 clockit ./gradlew --project-dir $ORIGINAL_DIR --priority low --max-workers 28 $GW_ARGS

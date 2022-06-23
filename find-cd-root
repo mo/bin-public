@@ -1,0 +1,20 @@
+#!/bin/bash
+DEFAULT_DIR=$1
+shift
+while [ 1 ]; do
+        REQUIRED_ITEM_MISSING=0
+        for ITEM in "$@" ; do
+                if [ ! -e "$ITEM" ]; then
+                        REQUIRED_ITEM_MISSING=1
+                fi
+        done
+        if [ $REQUIRED_ITEM_MISSING -eq 0 ]; then
+                echo $(pwd)
+                exit 0
+        fi
+        cd ..
+        if [ "$(pwd)" == "/" ]; then
+                echo $DEFAULT_DIR
+                exit 1
+        fi
+done

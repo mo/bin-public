@@ -1,0 +1,5 @@
+#!/bin/bash
+TARGET="$@"
+jscodeshift -t $(find-git-root)/node_modules/5to6-codemod/transforms/exports.js $TARGET
+jscodeshift -t $(find-git-root)/node_modules/5to6-codemod/transforms/cjs.js $TARGET
+ecmascript-drop-semis $TARGET

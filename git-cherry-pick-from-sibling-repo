@@ -1,0 +1,32 @@
+#!/bin/bash
+
+SIBLING_REPO_DIRNAME=$1
+SHA1_TO_PICK=$2
+SCRIPT_DIR=$(dirname $0)
+
+if [ "$2" == "" ]; then
+	echo "usage: $(basename $0) SIBLING_REPO_DIRNAME SHA1_TO_PICK"
+	exit 1
+fi
+
+cd $($SCRIPT_DIR/find-cd-root $(pwd) .git)
+SIBLING_REPO_ROOT="$(pwd)/../$SIBLING_REPO_DIRNAME"
+if [ ! -d "${SIBLING_REPO_ROOT}" ]; then
+	echo "error: cannot find sibling repo at: ${SIBLING_REPO_ROOT}"
+	exit 1
+fi
+
+if [ "$(git --git-dir=$SIBLING_REPO_ROOT/.git log -1 --pretty=format:%H ${SHA1_TO_PICK})" == "" ]; then
+	echo "error: ${SHA1_TO_PICK} is not a valid sha1"
+	exit 1
+fi
+
+PATCH_FILE=$(mktemp)
+git --git-dir=$SIBLING_REPO_ROOT/.git format-patch -k -1 --stdout ${SHA1_TO_PICK} > $PATCH_FILE
+
+git am -p0 -k -3 $PATCH_FILE
+EXIT_CODE=$?
+if [ "$EXIT_CODE" != "0" ]; then
+	patch -p0 --merge --no-backup-if-mismatch < $PATCH_FILE
+fi
+

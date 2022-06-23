@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "DEBUG: Oldest target for all fixups is: $(git log --oneline --grep fixup! --author=$(git config user.email) --all-match --pretty=format:%h | xargs -I SHA1 git-fixup-target SHA1 | xargs git merge-base --octopus)"
+EDITOR=true git rebase -i --autosquash $(git log --oneline --grep fixup! --author=$(git config user.email) --all-match --pretty=format:%h | xargs -I SHA1 git-fixup-target SHA1 | xargs git merge-base --octopus)^

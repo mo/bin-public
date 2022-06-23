@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Correct example:
+# echo -n 'doSomething();' | sha256sum | awk '{print $1}' | xxd -r -p | base64
+# script-src 'sha256-RFWPLDbv2BY+rCkDzsE+0fr8ylGr2R2faWMhq4lfEQc=';
+#
+# Another method is:
+# echo -n 'doSomething();' | openssl sha256 -binary | openssl base64
+
+CSP_HASH=$(sha256sum | awk '{print $1}' | xxd -r -p | base64)
+echo "script-src 'sha256-$CSP_HASH';"

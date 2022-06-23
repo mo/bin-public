@@ -1,0 +1,2 @@
+#!/bin/bash
+while true; do host-is-up 8.8.8.8 && notify-send "$(cowsay it woooooooooooooorks\!)" ; sleep 1 ; done
