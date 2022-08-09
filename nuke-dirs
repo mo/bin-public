@@ -21,7 +21,7 @@ done
 # if there are more subdirs than this, user will need to scroll up and down in list
 MAX_MENU_ITEMS_ON_SCREEN_AT_ONCE=60
 
-let DIALOG_MENU_WIDTH="$(find -mindepth 1 -maxdepth 1 -type d | wc -L)+12"
+let DIALOG_MENU_WIDTH="$(find -mindepth 1 -maxdepth 1 -type d | awk '{ print length }' | sort -n | tail -1)+12"
 if [ $SUBDIR_COUNT -gt $MAX_MENU_ITEMS_ON_SCREEN_AT_ONCE ]; then
 	let "DIALOG_MENU_HEIGHT=$MAX_MENU_ITEMS_ON_SCREEN_AT_ONCE+7"
 else

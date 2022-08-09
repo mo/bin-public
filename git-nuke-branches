@@ -18,7 +18,7 @@ done
 # if there are more branches than this, user will need to scroll up and down in list
 MAX_MENU_ITEMS_ON_SCREEN_AT_ONCE=60
 
-let DIALOG_MENU_WIDTH="$(git branch -v | wc -L)+8"
+let DIALOG_MENU_WIDTH="$(git branch -v | awk '{ print length }' | sort -n | tail -1)+8"
 if [ $BRANCH_COUNT -gt $MAX_MENU_ITEMS_ON_SCREEN_AT_ONCE ]; then
 	let "DIALOG_MENU_HEIGHT=$MAX_MENU_ITEMS_ON_SCREEN_AT_ONCE+7"
 else
