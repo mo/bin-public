@@ -1,7 +1,9 @@
 #!/bin/bash
 
-if [ "$(ps -eo cmd | grep nano | grep $1 | grep -v grep | wc -l)" != "0" ]; then
-        echo "ERROR: You are already editing $1 in another terminal."
-        exit 1
+if [[ "$OSTYPE" != 'darwin'* ]]; then
+	if [ "$(ps -eo cmd | grep nano | grep $1 | grep -v grep | wc -l)" != "0" ]; then
+	        echo "ERROR: You are already editing $1 in another terminal."
+        	exit 1
+	fi
 fi
 nn $1
