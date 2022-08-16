@@ -1,0 +1,18 @@
+#!/bin/bash
+
+if [ "$1" == "" ]; then
+    echo "USAGE: gsed s/BLAH/YADA/g";
+    echo "       or";
+    echo "       gsed WHATEVER REPLACEMENT";
+    return;
+fi;
+if [ "$2" != "" ]; then
+    PATTERN="s#$1#$2#g";
+else
+    if [ "$(echo $1 | grep /)" != "" ]; then
+        echo "error: \$1 may not contain /";
+        return;
+    fi;
+    PATTERN="$1";
+fi;
+find -type f -and ! -path */.git/* -and ! -name .git | xargs -I FILE sed -i "$PATTERN" FILE
