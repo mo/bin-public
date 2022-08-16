@@ -1,9 +1,9 @@
 #!/bin/bash
 
 if [ "$1" == "" ]; then
-    echo "USAGE: gsed s/BLAH/YADA/g";
+    echo "USAGE: $0 s/BLAH/YADA/g";
     echo "       or";
-    echo "       gsed WHATEVER REPLACEMENT";
+    echo "       $0 WHATEVER REPLACEMENT";
     return;
 fi;
 if [ "$2" != "" ]; then
@@ -15,4 +15,5 @@ else
     fi;
     PATTERN="$1";
 fi;
-find -type f -and ! -path */.git/* -and ! -name .git | xargs -I FILE sed -i "$PATTERN" FILE
+
+$(find-gnu-find) -type f -and ! -path '*/.git/*' -and ! -name .git | $(find-gnu-xargs) -I FILE $(find-gnu-sed) -i "$PATTERN" FILE

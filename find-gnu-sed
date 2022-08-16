@@ -1,0 +1,8 @@
+#!/bin/bash
+# install GNU sed on macos using:
+# brew install gnu-sed
+if [[ "$OSTYPE" == 'darwin'* ]]; then
+	echo "gsed"
+else
+	echo "sed"
+fi

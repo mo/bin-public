@@ -1,0 +1,8 @@
+#!/bin/bash
+# install GNU find on macos using:
+# brew install findutils
+if [[ "$OSTYPE" == 'darwin'* ]]; then
+	echo $(brew --prefix)/opt/findutils/libexec/gnubin/find
+else
+	echo "find"
+fi
