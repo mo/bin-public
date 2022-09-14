@@ -1,0 +1,9 @@
+#!/bin/bash
+
+echo -n "email: "
+read EMAIL
+echo
+
+echo -n "name: "
+read NAME
+GIT_AUTHOR_NAME="$NAME" GIT_AUTHOR_EMAIL="$EMAIL" GIT_COMMITTER_NAME="$NAME" GIT_COMMITTER_EMAIL="$EMAIL" git commit
