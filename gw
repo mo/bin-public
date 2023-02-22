@@ -15,4 +15,4 @@ if [ "$ALL_ARGS" != "" ]; then
 else
 	GW_ARGS="build testClasses -x test"
 fi
-RF_LOCAL_DEVELOPER_BUILD=1 clockit ./gradlew --project-dir $ORIGINAL_DIR --priority low --max-workers 28 $GW_ARGS
+clockit ./gradlew --project-dir $ORIGINAL_DIR --priority low --max-workers 28 $GW_ARGS
