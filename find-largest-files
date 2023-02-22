@@ -1,0 +1,2 @@
+#!/bin/bash
+find . -type f | xargs -I FIL du -h FIL | sort -h -k1,1

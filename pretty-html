@@ -1,0 +1,2 @@
+#!/bin/bash
+tidy -q -i -w 160 -f /dev/null
