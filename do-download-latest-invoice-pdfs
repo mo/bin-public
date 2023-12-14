@@ -1,0 +1,29 @@
+#!/bin/bash
+
+DO_AUTH_CONTEXT=$1
+
+if [ "$DO_AUTH_CONTEXT" == "" ]; then
+	echo "usage: $0 DO_AUTH_CONTEXT"
+	echo ""
+	echo "Available DO contexts are:"
+	doctl auth list
+	echo ""
+	exit 1
+fi
+
+PDF_OUTPUT_DIRECTORY="$HOME/Downloads"
+
+ALL_INVOICE_LINES=$(doctl --context $DO_AUTH_CONTEXT invoice list --output json | jq -r '.invoices[] | .invoice_uuid + "_" + .invoice_period' | head -6)
+
+for INVOICE_LINE in $ALL_INVOICE_LINES; do
+	INVOICE_UUID=$(echo $INVOICE_LINE | cut -f 1 -d '_')
+	INVOICE_PERIOD=$(echo $INVOICE_LINE | cut -f 2 -d '_')
+	INVOICE_FILENAME=$PDF_OUTPUT_DIRECTORY/digital-ocean-$DO_AUTH_CONTEXT-$INVOICE_PERIOD.pdf
+	if [ ! -f "$INVOICE_FILENAME" ]; then
+		echo "$INVOICE_FILENAME ... downloading"
+		doctl --context $DO_AUTH_CONTEXT invoice pdf $INVOICE_UUID $INVOICE_FILENAME
+	else
+		echo "$INVOICE_FILENAME .... already exists"
+	fi
+done
+

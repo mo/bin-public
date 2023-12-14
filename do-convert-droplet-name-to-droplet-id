@@ -1,0 +1,4 @@
+#!/bin/bash
+
+DROPLET_NAME="$1"
+doctl compute droplet ls --no-header --format Name,ID | grep -E "^${DROPLET_NAME} " | awk '{print $NF}'

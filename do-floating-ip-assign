@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ "$2" == "" ] || [ "$1" == "--help" ]; then
+	echo "usage: $(basename $0) FLOATING_IP DROPLET_NAME"
+	exit 1
+fi
+
+FLOATING_IP="$1"
+DROPLET_NAME="$2"
+
+doctl compute floating-ip-action assign $FLOATING_IP $(do-convert-droplet-name-to-droplet-id $DROPLET_NAME)

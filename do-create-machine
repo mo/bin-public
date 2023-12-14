@@ -1,0 +1,15 @@
+#!/bin/bash
+
+DROPLET_IP=$(doctl compute droplet create \
+	--no-header \
+	--format PublicIPv4 \
+	--ssh-keys $(ssh-key-fingerprint) \
+	--enable-ipv6 \
+	--wait \
+	$@)
+
+while [ "$(ssh -q -o StrictHostKeyChecking=no root@$DROPLET_IP 'echo online')" != "online" ]; do
+	sleep 1
+done
+
+echo $DROPLET_IP
